@@ -1,6 +1,6 @@
 # React Google Docs & Auth With Appwrite
 
-**Features**
+## Features
 
 - Private Routes
 - Auth Context
@@ -9,7 +9,7 @@
 - User Logout
 - Registration
 
-### Project Pages
+## Project Pages
 // TODO : add <img scr="" />
 
 ## Getting started
