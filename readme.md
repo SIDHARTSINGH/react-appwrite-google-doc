@@ -1,4 +1,4 @@
-# React Authentication Private Routes With Appwrite
+# React Google Docs & Auth With Appwrite
 
 **Features**
 
