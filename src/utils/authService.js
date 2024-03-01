@@ -15,6 +15,7 @@ class AuthService {
   }
 
   async createAccount({ email, password, name }) {
+    // console.log("authService -> createAccount -> userInfo", password);
     try {
       const userAccount = await this.account.create(
         ID.unique(),

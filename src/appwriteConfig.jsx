@@ -1,12 +1,8 @@
-import { Client, Account } from 'appwrite';
+const conf = {
+  appwriteUrl: import.meta.env.VITE_APP_APPWRITE_URL,
+  appwriteProjectId: import.meta.env.VITE_APP_APPWRITE_PROJECT_ID,
+  appwriteDatabaseId: import.meta.env.VITE_APP_APPWRITE_DATABASE_ID,
+  appwriteCollectionId: import.meta.env.VITE_APP_APPWRITE_PROJECT_ID,
+};
 
-export const API_ENDPOINT = 'https://cloud.appwrite.io/v1'
-export const PROJECT_ID = 'YOU PROJECT ID HERE'
-
-const client = new Client()
-    .setEndpoint(API_ENDPOINT) 
-    .setProject(PROJECT_ID);    
-
-export const account = new Account(client);
-
-export default client;
+export default conf;
