@@ -1,12 +1,6 @@
-# React Authentication Private Routes With Appwrite
+# React Google Docs & Auth With Appwrite
 
-Source code for complete Authenticate tutorial (LINK WILL BE ADDED HERE). 
-
-Reference [1-starter-template](1-starter-template) to follow along with video and [2-final](2-final) to see final source code.
-
-Video guide can be found [here](video-notes.md)
-
-**Topics coverd in video:**
+## Features
 
 - Private Routes
 - Auth Context
@@ -15,9 +9,8 @@ Video guide can be found [here](video-notes.md)
 - User Logout
 - Registration
 
-### Project Pages
-
-<img src="images/demo.png">
+## Project Pages
+// TODO : add <img scr="" />
 
 ## Getting started
 
