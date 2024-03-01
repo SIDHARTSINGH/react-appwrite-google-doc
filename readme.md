@@ -2,12 +2,8 @@
 
 ## Features
 
-- Private Routes
-- Auth Context
-- User Login
-- Persisting logged in user
-- User Logout
-- Registration
+- Appwrite Service
+- Persistent Login
 
 ## Project Pages
 // TODO : add <img scr="" />
