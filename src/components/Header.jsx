@@ -1,45 +1,165 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
+import {
+  Box,
+  Flex,
+  Avatar,
+  HStack,
+  IconButton,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  useDisclosure,
+  useColorModeValue,
+  Stack,
+} from "@chakra-ui/react";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
-const Header = () => {
+// const Links = ["Home", "Projects", "Team"];
+
+const NavLink = (props) => {
+  const { children } = props;
+
+  return (
+    <Box
+      px={2}
+      py={1}
+      rounded={"md"}
+      _hover={{
+        textDecoration: "none",
+        bg: useColorModeValue("gray.200", "gray.700"),
+      }}
+    >
+      <Link to={children.path}>{children.name}</Link>
+    </Box>
+  );
+};
+
+export default function Header() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
+
+  const Links = [
+    { name: "Home", path: "/" },
+
+    { name: "Team", path: "/" },
+  ];
 
   const logoutClick = () => {
     navigate("/login");
   };
 
   return (
-    <div className="header">
-      <div>
-        <Link id="header-logo" to="/">
-          LOGO
-        </Link>
-      </div>
+    <>
+      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+          <IconButton
+            size={"md"}
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            aria-label={"Open Menu"}
+            display={{ md: "none" }}
+            onClick={isOpen ? onClose : onOpen}
+          />
+          <HStack spacing={8} alignItems={"center"}>
+            <Box>DaisyDocs</Box>
+            <HStack
+              as={"nav"}
+              spacing={4}
+              display={{ base: "none", md: "flex" }}
+            >
+              {user && [
+                Links.map((link) => <NavLink key={link.name}>{link}</NavLink>),
+                <NavLink key="profile">
+                  {{ name: "Profile", path: `/user/${user.$id}` }}
+                </NavLink>,
+              ]}
+            </HStack>
+          </HStack>
+          <Flex alignItems={"center"}>
+            <Stack
+              flex={{ base: 1, md: 0 }}
+              justify={"flex-end"}
+              direction={"row"}
+              spacing={6}
+              marginRight={6}
+            >
+              {user == null ? (
+                <>
+                  <Button fontSize={"sm"} fontWeight={400} variant={"link"}>
+                    <Link to={"/login"}>Log In</Link>
+                  </Button>
+                  <Button
+                    display={{ base: "none", md: "inline-flex" }}
+                    fontSize={"sm"}
+                    fontWeight={600}
+                    color={"white"}
+                    bg={"pink.400"}
+                    _hover={{
+                      bg: "pink.300",
+                    }}
+                  >
+                    <Link to={"/register"}>Register</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    display={{ base: "none", md: "inline-flex" }}
+                    fontSize={"sm"}
+                    fontWeight={600}
+                    color={"white"}
+                    bg={"pink.400"}
+                    href={"/register"}
+                    _hover={{
+                      bg: "pink.300",
+                    }}
+                    onClick={logoutUser}
+                  >
+                    Log Out
+                  </Button>
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      rounded={"full"}
+                      variant={"link"}
+                      cursor={"pointer"}
+                      minW={0}
+                    >
+                      <Avatar
+                        size={"sm"}
+                        src={
+                          "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                        }
+                      />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem>My Account</MenuItem>
+                      <MenuItem>Service</MenuItem>
+                      <MenuDivider />
+                      <MenuItem>Setting</MenuItem>
+                    </MenuList>
+                  </Menu>
+                </>
+              )}
+            </Stack>
+          </Flex>
+        </Flex>
 
-      <div className="links--wrapper">
-        {user ? (
-          <>
-            <Link to="/" className="header--link">
-              Home
-            </Link>
-            <Link to="/profile" className="header--link">
-              Profile
-            </Link>
-
-            <button onClick={logoutUser} className="btn">
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link className="btn" to="/login">
-            Login
-          </Link>
-        )}
-      </div>
-    </div>
+        {isOpen ? (
+          <Box pb={4} display={{ md: "none" }}>
+            <Stack as={"nav"} spacing={4}>
+              {Links.map((link) => (
+                <NavLink key={link}>{link}</NavLink>
+              ))}
+            </Stack>
+          </Box>
+        ) : null}
+      </Box>
+    </>
   );
-};
-
-export default Header;
+}

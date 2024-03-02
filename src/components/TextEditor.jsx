@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import { useParams } from "react-router-dom";
-import authService from "../appwrite/authService";
-import useAuthStore from "../stores/AuthStore";
-import "../EditorStyles.css";
+import { useAuth } from "../utils/AuthContext";
+import authService from "../utils/authService";
+import "./TextEditor.css";
 
 const toolbarOptions = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -22,7 +22,8 @@ const TextEditor = () => {
   const params = useParams();
   const [quill, setQuill] = useState();
   const [loading, setLoading] = useState(true);
-  const user = useAuthStore((s) => s.user);
+  // const user = useAuthStore((s) => s.user);
+  const { user } = useAuth();
 
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -48,7 +49,7 @@ const TextEditor = () => {
         .getDocument(
           import.meta.env.VITE_APP_APPWRITE_DATABASE_ID,
           import.meta.env.VITE_APP_APPWRITE_COLLECTION_ID,
-          params.doc_id
+          params.docId
         )
         .then((res) => {
           // console.log("res from db", res);

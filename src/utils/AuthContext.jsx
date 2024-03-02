@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ID } from "appwrite";
 import authService from "./authService";
 
 const AuthContext = createContext();
@@ -18,8 +19,6 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (userInfo) => {
     setLoading(true);
 
-    console.log("userInfo", userInfo);
-
     try {
       //   let response = await account.createEmailSession(
       //     userInfo.email,
@@ -27,8 +26,8 @@ export const AuthProvider = ({ children }) => {
       //   );
       //   let accountDetails = await account.get();
 
-      let response = authService.login(userInfo);
-      let accountDetails = authService.getCurrentUser();
+      let response = await authService.login(userInfo);
+      let accountDetails = await authService.getCurrentUser();
 
       setUser(accountDetails);
     } catch (error) {
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   const logoutUser = async () => {
     // await account.deleteSession("current");
-    authService.logout();
+    await authService.logout();
     setUser(null);
   };
 
@@ -59,6 +58,24 @@ export const AuthProvider = ({ children }) => {
       await authService.login({ ...userInfo });
       //   let accountDetails = await account.get()
       let accountDetails = await authService.getCurrentUser();
+      let newUser = {
+        Id: accountDetails.$id,
+        Name: userInfo.name,
+        Email: userInfo.email,
+        password: userInfo.password,
+        DocIds: [],
+      };
+      await authService.databases
+        .createDocument(
+          import.meta.env.VITE_APP_APPWRITE_DATABASE_ID,
+          import.meta.env.VITE_APP_APPWRITE_USER_COLLECTION_ID,
+          ID.unique(),
+          newUser
+        )
+        .then((res) => {
+          console.log("New User in DB", res);
+        })
+        .catch((err) => console.error(err));
 
       setUser(accountDetails);
       navigate("/");
@@ -73,7 +90,9 @@ export const AuthProvider = ({ children }) => {
     try {
       let accountDetails = await authService.getCurrentUser();
       setUser(accountDetails);
-    } catch (error) {}
+    } catch (err) {
+      console.error(err);
+    }
     setLoading(false);
   };
 
