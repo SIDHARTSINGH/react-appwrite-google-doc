@@ -3,9 +3,9 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import authService from "../utils/authService";
 import { AddIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import NewDocImg from "../assets/new_document.svg";
 import {
   Stack,
-  SimpleGrid,
   Box,
   Button,
   Image,
@@ -25,6 +25,8 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
+  Wrap,
+  WrapItem,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
@@ -33,16 +35,24 @@ const Profile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(false);
   const [docs, setDocs] = useState([]);
   const [dbUser, setDBUser] = useState();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isNewOpen,
+    onOpen: onNewOpen,
+    onClose: onNewClose,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenOpen,
+    onOpen: onOpenOpen,
+    onClose: onOpenClose,
+  } = useDisclosure();
   const documentIdInput = useRef();
+  const documentNameInput = useRef();
 
   const handleAddDoc = async () => {
-    setLoading(true);
-
     const newDoc = {
+      name: documentNameInput.current.value,
       user: "",
       userId: user.$id,
       data: "",
@@ -83,9 +93,6 @@ const Profile = () => {
                 creator.$id,
                 creator
               )
-              .then((res) => {
-                console.log("udpated user", res);
-              })
               .catch((err) => console.error(err));
           })
           .catch((err) => console.error(err));
@@ -95,7 +102,10 @@ const Profile = () => {
       .catch((err) => console.error(err));
   };
 
-  const handleOpenDoc = async () => {};
+  const handleOpenDoc = (doc) => {
+    // console.log("opening ", doc);
+    navigate(`${location.pathname}/doc/${doc.$id}`);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -133,24 +143,50 @@ const Profile = () => {
             leftIcon={<AddIcon />}
             colorScheme="teal"
             variant="outline"
-            onClick={handleAddDoc}
+            onClick={onNewOpen}
           >
             New Doc
           </Button>
+          <Modal isOpen={isNewOpen} onClose={onNewClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>New Document</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <FormControl>
+                  <FormLabel>Enter Document Name</FormLabel>
+                  <Input ref={documentNameInput} placeholder="Document Name" />
+                </FormControl>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  type="submit"
+                  colorScheme="teal"
+                  mr={3}
+                  onClick={() => {
+                    onNewClose();
+                    handleAddDoc();
+                    // console.log(documentNameInput.current.value);
+                  }}
+                >
+                  Create
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
           <Button
             leftIcon={<ExternalLinkIcon />}
             colorScheme="teal"
             variant="outline"
-            onClick={onOpen}
+            onClick={onOpenOpen}
           >
             Open Doc
           </Button>
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpenOpen} onClose={onOpenClose}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>Open Document</ModalHeader>
               <ModalCloseButton />
-              {/* <form onSubmit={handleOpenDoc}> */}
               <ModalBody pb={6}>
                 <FormControl>
                   <FormLabel>Enter Document Id</FormLabel>
@@ -162,10 +198,7 @@ const Profile = () => {
                   type="submit"
                   colorScheme="teal"
                   mr={3}
-                  onClick={() => {
-                    onClose();
-                    console.log(documentIdInput.current.value);
-                  }}
+                  onClick={onOpenClose}
                 >
                   <Link
                     to={`${location.pathname}/doc/${documentIdInput.current?.value}`}
@@ -174,7 +207,6 @@ const Profile = () => {
                   </Link>
                 </Button>
               </ModalFooter>
-              {/* </form> */}
             </ModalContent>
           </Modal>
         </HStack>
@@ -182,33 +214,43 @@ const Profile = () => {
       <Box paddingBottom={"6"}>
         <Divider />
       </Box>
-      <SimpleGrid minChildWidth="120px" spacing="40px" paddingX={6}>
+      <Wrap paddingX={6} spacingX={6}>
         {docs.map((doc) => (
-          <Card key={doc.$id} overflow="hidden" variant="outline">
-            <Image
-              objectFit="cover"
-              maxW={{ base: "100%", sm: "200px" }}
-              src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-              alt="Caffe Latte"
-            />
-            <Box
-              position="absolute"
-              top="50%"
-              left="50%"
-              height={"20px"}
-              width={"20px"}
-              transform="translate(-50%, -50%)"
-              textAlign="center"
-              color="white"
-            ></Box>
-            <CardBody>
-              <Heading size={"sm"}>
-                <Text>Document</Text>
-              </Heading>
-            </CardBody>
-          </Card>
+          <WrapItem key={doc.$id}>
+            <Card
+              width={"200px"}
+              overflow="hidden"
+              variant="outline"
+              _hover={{ cursor: "pointer" }}
+              onClick={() => handleOpenDoc(doc)}
+            >
+              <Image
+                objectFit="cover"
+                maxW={'{ base: "100%", sm: "200px" }'}
+                src={NewDocImg}
+                alt="New Document"
+              />
+              <Box
+                position="absolute"
+                top="50%"
+                left="50%"
+                height={"20px"}
+                width={"20px"}
+                transform="translate(-50%, -50%)"
+                textAlign="center"
+                color="white"
+              ></Box>
+              <CardBody>
+                <Heading size={"sm"}>
+                  <Text _hover={{ textDecorationLine: "underline" }}>
+                    {doc.name}
+                  </Text>
+                </Heading>
+              </CardBody>
+            </Card>
+          </WrapItem>
         ))}
-      </SimpleGrid>
+      </Wrap>
     </div>
   );
 };
